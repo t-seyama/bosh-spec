@@ -1,0 +1,211 @@
+#---
+#env:
+#  http_proxy: "(( inline ))"  # The http_proxy across the VMs used for all requests over http
+#  https_proxy: "(( inline ))"  # The http_proxy across the VMs used for all requests over https
+#  no_proxy: "(( inline ))"  # Set No_Proxy across the VMs
+#login:
+#  analytics:
+#    code: "(( inline ))"  # Google analytics code. If Google Analytics is desired set both login.analytics.code and login.analytics.domain
+#    domain: "(( inline ))"  # Google analytics domain. If Google Analytics is desired set both login.analytics.code and login.analytics.domain
+#  asset_base_url: "/resources/oss"  # Deprecated in favor of branding properties. Base url for static assets, allows custom styling of the login server.  Use '/resources/pivotal' for Pivotal style.
+#  branding:
+#    company_name: "(( inline ))"  # This name is used on the UAA Pages and in account management related communication in UAA
+#    footer_legal_text: "(( inline ))"  # This text appears on the footer of all UAA pages
+#    footer_links: "(( inline ))"  # These links appear on the footer of all UAA pages. You may choose to add multiple urls for things like Support, Terms of Service etc.
+#    product_logo: "(( inline ))"  # This is a base64 encoded PNG image which will be used as the logo on all UAA pages like Login, Sign Up etc.
+#    square_logo: "(( inline ))"  # This is a base64 encoded PNG image which will be used as the favicon for the UAA pages
+#  home_redirect: "(( inline ))"  # URL for configuring a custom home page
+#  idpDiscoveryEnabled: false  # IDP Discovery should be set to true if you have configured more than one identity provider for UAA. The discovery relies on email domain being set for each additional provider. This property will also enable a list of selectable accounts that have signed in via the browser.
+#  links:
+#    passwd: "/forgot_password"  # URL for requesting password reset
+#    signup: "/create_account"  # URL for requesting to signup/register for an account
+#  links: "(( inline ))"  # A hash of home/passwd/signup URLS (see commented examples below)
+#  logout:
+#    redirect:
+#      parameter:
+#        disable: true  # When set to false, this allows an operator to leverage an open redirect on the UAA (/logout.do?redirect=google.com). No open redirect enabled
+#        whitelist: "(( inline ))"  # A list of URLs. When this list is non null, including empty, and disable=false, logout redirects are allowed, but limited to the whitelist URLs. If a redirect parameter value is not white listed, redirect will be to the default URL.
+#      url: "/login"  # The Location of the redirect header following a logout of the the UAA (/logout.do).
+#  messages: "(( inline ))"  # |
+#  notifications:
+#    url: "(( inline ))"  # The url for the notifications service (configure to use Notifications Service instead of SMTP server)
+#  oauth:
+#    providers: "(( inline ))"  # Contains a hash of OpenID Connect/Oauth Identity Providers, the key will be used as the origin key for that provider, followed by key/value pairs. Presence of the userInfoUrl will mark it as an OpenID provider instead of OAuth.
+#  prompt:
+#    password:
+#      text: Password  # The text used to prompt for a password during login
+#    username:
+#      text: Email  # The text used to prompt for a username during login
+#  protocol: https  # Scheme to use for HTTP communication (http/https)
+#  saml:
+#    entity_base_url: "(( inline ))"  # |
+#    entityid: "(( inline ))"  # |
+#    providers: "(( inline ))"  # Contains a hash of SAML Identity Providers, the key is the IDP Alias, followed by key/value pairs. To learn more about how to setup a saml identity provider go to https://simplesamlphp.org
+#    serviceProviderCertificate: "(( inline ))"  # Service provider certificate.
+#    serviceProviderKey: "(( inline ))"  # Private key for the service provider certificate.
+#    serviceProviderKeyPassword: "(( inline ))"  # Password to protect the service provider private key.
+#    signMetaData: true  # Global property to sign Local/SP metadata
+#    signRequest: true  # Global property to sign Local/SP requests
+#    signatureAlgorithm: "(( inline ))"  # Signature hashing algorithm for SAML. Can be SHA1, SHA256, or SHA512.
+#    socket:
+#      connectionManagerTimeout: 10000  # Timeout in milliseconds for connection pooling for SAML metadata HTTP requests
+#      soTimeout: 10000  # Read timeout in milliseconds for SAML metadata HTTP requests
+#    wantAssertionSigned: true  # Global property to request that external IDPs sign their SAML assertion before sending them to the UAA
+#  self_service_links_enabled: "(( inline ))"  # Enable self-service account creation and password resets links.
+#  smtp:
+#    auth: false  # If true, authenticate using AUTH command. https://javamail.java.net/nonav/docs/api/com/sun/mail/smtp/package-summary.html
+#    from_address: "(( inline ))"  # SMTP from address
+#    host: localhost  # SMTP server host address
+#    password: "(( inline ))"  # SMTP server password
+#    port: 2525  # SMTP server port
+#    starttls: false  # If true, send STARTTLS command before login to server. https://javamail.java.net/nonav/docs/api/com/sun/mail/smtp/package-summary.html
+#    user: "(( inline ))"  # SMTP server username
+#  smtp: "(( inline ))"  # SMTP server configuration, for password reset emails etc.
+#  url: "(( inline ))"  # |
+#postgres:
+#  address: "(( inline ))"  # The database address
+#  databases: "(( inline ))"  # A list of databases and associated properties to create
+#  log_line_prefix: "%m: "  # The postgres `printf` style string that is output at the beginning of each log line
+#  max_connections: 500  # Maximum number of database connections
+#  port: 5524  # The database port
+#  roles: "(( inline ))"  # A list of database roles and associated properties to create
+#uaa:
+#  admin:
+#    client_secret: "(( inline ))"  # Secret of the admin client - a client named admin with uaa.admin as an authority
+#  authentication:
+#    policy:
+#      countFailuresWithinSeconds: 1200  # Number of seconds in which lockoutAfterFailures failures must occur in order for account to be locked
+#      global:
+#        countFailuresWithinSeconds: 3600  # Number of seconds in which lockoutAfterFailures failures must occur in order for account to be locked
+#        lockoutAfterFailures: 5  # Number of allowed failures before account is locked
+#        lockoutPeriodSeconds: 300  # Number of seconds to lock out an account when lockoutAfterFailures failures is exceeded
+#      lockoutAfterFailures: 5  # Number of allowed failures before account is locked
+#      lockoutPeriodSeconds: 300  # Number of seconds to lock out an account when lockoutAfterFailures failures is exceeded
+#  catalina_opts: "-Xmx768m -XX:MaxMetaspaceSize=256m"  # The options used to configure Tomcat
+#  clients: "(( inline ))"  # List of OAuth2 clients that the UAA will be bootstrapped with
+#  database:
+#    abandoned_timeout: 300  # Timeout in seconds for the longest running queries. Take into DB migrations for this timeout as they may run during a long period of time.
+#    case_insensitive: "(( inline ))"  # Set to true if you don't want to be using LOWER() SQL functions in search queries/filters, because you know that your DB is case insensitive. If this property is null, then it will be set to true if the UAA DB is MySQL and false otherwise, but even on MySQL you can override it by setting it explicitly to false
+#    log_abandoned: true  # Should connections that are forcibly closed be logged.
+#    max_connections: 100  # The max number of open connections to the DB from a running UAA instance
+#    max_idle_connections: 10  # The max number of open idle connections to the DB from a running UAA instance
+#    min_idle_connections: 0  # The min number of open idle connections to the DB from a running UAA instance
+#    remove_abandoned: false  # True if connections that are left open longer then abandoned_timeout seconds during a session(time between borrow and return from pool) should be forcibly closed
+#  disableInternalAuth: false  # Disables internal user authentication
+#  disableInternalUserManagement: false  # Disables UI and API for internal user management
+#  issuer: "(( inline ))"  # The url to use as the issuer URI
+#  jwt:
+#    claims:
+#      exclude: "(( inline ))"  # List of claims to exclude from the JWT-based OAuth2 tokens
+#    policy:
+#      accessTokenValiditySeconds: 43200  # The access token validity for the default zone if nothing is configured on the client. Will override global validity policies for the default zone only.
+#      active_key_id: "(( inline ))"  # The ID of the JWT signing key to be used when signing tokens.
+#      global:
+#        accessTokenValiditySeconds: 43200  # The global access token validity for all zones if nothing is configured on the client
+#        refreshTokenValiditySeconds: 2592000  # The global refresh token validity for all zones if nothing is configured on the client
+#      keys: "(( inline ))"  # Map of key IDs and signing keys, each defined with a property `signingKey`
+#      refreshTokenValiditySeconds: 2592000  # The refresh token validity for the default zone if nothing is configured on the client. Will override global validity policies for the default zone only.
+#    refresh:
+#      restrict_grant: false  # Disallows refresh-token grant for any client for which the user has not approved the `uaa.offline_token` scope
+#    revocable: false  # Set to true if you wish that even JWT tokens become individually revocable and stored in the UAA token storage. This setting applies to the default zone only.
+#    signing_key: "(( inline ))"  # Deprecated. Use uaa.jwt.policy.keys. The key used to sign the JWT-based OAuth2 tokens
+#    verification_key: "(( inline ))"  # Deprecated. Use uaa.jwt.policy.keys. The key used to verify JWT-based OAuth2 tokens
+#  ldap:
+#    add_shadow_user_on_login: true  # If set to false, only users pre-populated in the UAA user database will be allowed to authenticate via LDAP. If set to true, any user from LDAP will be allowed to authenticate and an internal user will be created if one does not yet exist.
+#    attributeMappings: "(( inline ))"  # Specifies how UAA user attributes map to LDAP attributes. given_name, family_name, and phone_number are UAA user attributes, while other attributes should be included using the prefix `user.attribute`
+#    emailDomain: "(( inline ))"  # Sets the whitelist of emails domains that the LDAP identity provider handles
+#    enabled: false  # Set to true to enable LDAP
+#    externalGroupsWhitelist: "(( inline ))"  # Whitelist of external groups from LDAP that get added as roles in the ID Token
+#    groups:
+#      groupRoleAttribute: spring.security.ldap.dn  # Used with groups-as-scopes, defines the attribute that holds the scope name(s).
+#      groupSearchFilter: member={0}  # Search query filter to find the groups a user belongs to, or for a nested search, groups that a group belongs to
+#      maxSearchDepth: '1'  # Set to number of levels a nested group search should go. Set to 1 to disable nested groups (default)
+#      profile_type: no-groups  # ''no-groups'', ''groups-as-scopes'', ''groups-map-to-scopes'''
+#      searchBase: ''  # Search start point for a user group membership search, and sequential nested searches.. You can set this value to 'memberOf' when using Active Directory and skip group search but use the calculated memberOf field on the user records. No nested search will be performed.
+#      searchSubtree: 'true'  # Boolean value, set to true to search below the search base
+#    localPasswordCompare: 'true'  # Used with search-and-compare only. Set to true if passwords are retrieved by the search, and should be compared in the login server.
+#    mailAttributeName: mail  # The name of the LDAP attribute that contains the users email address
+#    mailSubstitute: ''  # Defines an email pattern containing a {0} to generate an email address for an LDAP user during authentication
+#    mailSubstituteOverridesLdap: false  # Set to true if you wish to override an LDAP user email address with a generated one
+#    passwordAttributeName: userPassword  # Used with search-and-compare only. The name of the password attribute in the LDAP directory
+#    passwordEncoder: org.cloudfoundry.identity.uaa.ldap.DynamicPasswordComparator  # Used with search-and-compare only. The encoder used to properly encode user password to match the one in the LDAP directory.
+#    profile_type: search-and-bind  # ''simple-bind'', ''search-and-bind'', ''search-and-compare'''
+#    referral: follow  # |
+#    searchBase: ''  # Used with search-and-bind and search-and-compare. Define a base where the search starts at.
+#    searchFilter: cn={0}  # Used with search-and-bind and search-and-compare. Search filter used. Takes one parameter, user ID defined as {0}
+#    ssl:
+#      skipverification: false  # Set to true, and LDAPS connection will not validate the server certificate.
+#      tls: none  # If using StartTLS, what mode to enable. Default is none, not enabled. Possible values are none, simple
+#    sslCertificate: "(( inline ))"  # Used with ldaps:// URLs. The certificate, if self signed, to be trusted by this connection.
+#    sslCertificateAlias: "(( inline ))"  # Used with ldaps:// URLs. The certificate alias, to be trusted by this connection and stored in the keystore.
+#    url: "(( inline ))"  # The URL to the ldap server, must start with ldap:// or ldaps://. Allows multiple servers to be specified, space separated
+#    userDN: "(( inline ))"  # 'Used with search-and-bind and search-and-compare. A valid LDAP ID that has read permissions to perform a search of the LDAP tree for user information. '
+#    userDNPattern: "(( inline ))"  # Used with simple-bind only. A semi-colon separated lists of DN patterns to construct a DN direct from the user ID without performing a search.
+#    userDNPatternDelimiter: ";"  # The delimiter character in between user DN patterns for simple-bind authentication
+#    userPassword: "(( inline ))"  # Used with search-and-bind and search-and-compare. Password for the LDAP ID that performs a search of the LDAP tree for user information.
+#  logging_level: DEBUG  # Set UAA logging level.  (e.g. TRACE, DEBUG, INFO)
+#  logging_use_rfc3339: false  # Sets the time format for log messages to be yyyy-MM-dd'T'HH:mm:ss.SSSXXX instead of yyyy-MM-dd HH:mm:ss.SSS
+#  newrelic: "(( inline ))"  # |
+#  password:
+#    policy:
+#      expirePasswordInMonths: 0  # Number of months after which current password expires
+#      global:
+#        expirePasswordInMonths: 0  # Number of months after which current password expires
+#        maxLength: 255  # Maximum number of characters required for password to be considered valid
+#        minLength: 0  # Minimum number of characters required for password to be considered valid
+#        requireDigit: 0  # Minimum number of digits required for password to be considered valid
+#        requireLowerCaseCharacter: 0  # Minimum number of lowercase characters required for password to be considered valid
+#        requireSpecialCharacter: 0  # Minimum number of special characters required for password to be considered valid
+#        requireUpperCaseCharacter: 0  # Minimum number of uppercase characters required for password to be considered valid
+#      maxLength: 255  # Maximum number of characters required for password to be considered valid
+#      minLength: 0  # Minimum number of characters required for password to be considered valid
+#      requireDigit: 0  # Minimum number of digits required for password to be considered valid
+#      requireLowerCaseCharacter: 0  # Minimum number of lowercase characters required for password to be considered valid
+#      requireSpecialCharacter: 0  # Minimum number of special characters required for password to be considered valid
+#      requireUpperCaseCharacter: 0  # Minimum number of uppercase characters required for password to be considered valid
+#  port: 8080  # Port that uaa will accept connections on
+#  proxy:
+#    servers: []  # Array of the router IPs acting as the first group of HTTP/TCP backends. These will be added to the proxy_ips_regex as exact matches.
+#  proxy_ips_regex: 10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|169\.254\.\d{1,3}\.\d{1,3}|127\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.1[6-9]{1}\.\d{1,3}\.\d{1,3}|172\.2[0-9]{1}\.\d{1,3}\.\d{1,3}|172\.3[0-1]{1}\.\d{1,3}\.\d{1,3}  # |
+#  require_https: true  # Request came in on a secure connection. Expect the load balancer/proxy to set the proper headers (x-forwarded-for, x-forwarded-proto)
+#  scim:
+#    external_groups: "(( inline ))"  # |
+#    groups: "(( inline ))"  # |
+#    user:
+#      override: true  # If true override users defined in uaa.scim.users found in the database.
+#    userids_enabled: true  # Enables the endpoint `/ids/Users` that allows consumers to translate user ids to name
+#    users: "(( inline ))"  # |
+#  servlet:
+#    session-cookie: "(( inline ))"  # |
+#  ssl:
+#    port: 8443  # If this property Tomcat will listen to this port and expect https traffic. If set to -1, Tomcat will not listen for https traffic.
+#    protocol_header: x-forwarded-proto  # The header to look for to determine if ssl termination was performed by a front end load balancer.
+#  sslCertificate: ''  # The server's ssl certificate. The default is a self-signed certificate and should always be replaced for production deployments
+#  sslPrivateKey: ''  # The server's ssl private key. Only passphrase-less keys are supported
+#  url: "(( inline ))"  # The base url of the UAA
+#  user:
+#    authorities:
+#    - openid
+#    - scim.me
+#    - cloud_controller.read
+#    - cloud_controller.write
+#    - cloud_controller_service_permissions.read
+#    - password.write
+#    - uaa.user
+#    - approvals.me
+#    - oauth.approvals
+#    - notification_preferences.read
+#    - notification_preferences.write
+#    - profile
+#    - roles
+#    - user_attributes
+#    - uaa.offline_token
+#  zones:
+#    internal:
+#      hostnames: "(( inline ))"  # |
+#uaadb:
+#  address: "(( inline ))"  # The UAA database IP address
+#  databases: "(( inline ))"  # The list of databases used in UAA database including tag/name
+#  db_scheme: "(( inline ))"  # Database scheme for UAA DB
+#  port: "(( inline ))"  # The UAA database Port
+#  roles: "(( inline ))"  # The list of database Roles used in UAA database including tag/name/password
