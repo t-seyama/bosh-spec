@@ -2,10 +2,8 @@
 #agent:
 #  blobstore:
 #    access_key_id: "(( inline ))"  # access_key_id for agent used by s3 blobstore plugin
-#    address: "(( inline ))"  # Address for agent to connect to blobstore server used by simple blobstore plugin
-#    host: "(( inline ))"  # Host of agent blobstore server used by simple blobstore plugin
-#    s3_force_path_style: "(( inline ))"  # Whether the agent blobstore plugin will always use path style for bucket access
-#    s3_multipart_threshold: "(( inline ))"  # Agent blobstore threshold for multipart uploads
+#    address: "(( inline ))"  # Address for agent to connect to blobstore server used by 'dav' blobstore plugin
+#    host: "(( inline ))"  # Host of agent blobstore server used by s3 blobstore plugin
 #    s3_port: "(( inline ))"  # Port of agent blobstore server used by s3 blobstore plugin
 #    s3_region: "(( inline ))"  # AWS region for agent used by s3 blobstore plugin
 #    s3_signature_version: "(( inline ))"  # Signature version used to connect to an s3 blobstore
@@ -14,24 +12,22 @@
 #    use_ssl: "(( inline ))"  # Whether the agent blobstore plugin should use SSL to connect to the blobstore server
 #  mbus: "(( inline ))"  # Message bus endpoint for the agent to start accepting agent requests
 #blobstore:
-#  access_key_id: "(( inline ))"  # access_key_id used by s3 blobstore plugin
-#  address: "(( inline ))"  # Address for agent to connect to blobstore server used by 'simple' blobstore plugin
+#  access_key_id: "(( inline ))"  # AWS access_key_id used by s3 blobstore plugin
+#  address: "(( inline ))"  # Address for agent to connect to blobstore server used by 'dav' blobstore plugin
 #  agent:
-#    password: "(( inline ))"  # Password agent uses to connect to blobstore used by 'simple' blobstore plugin
-#    user: "(( inline ))"  # Username agent uses to connect to blobstore used by 'simple' blobstore plugin
+#    password: "(( inline ))"  # Password agent uses to connect to blobstore used by 'dav' blobstore plugin
+#    user: "(( inline ))"  # Username agent uses to connect to blobstore used by 'dav' blobstore plugin
 #  bucket_name: "(( inline ))"  # S3 Bucket used by s3 blobstore plugin
-#  host: "(( inline ))"  # Host of blobstore server used by simple blobstore plugin
-#  path: "(( inline ))"  # Path used by 'local' blobstore plugin
-#  port: "(( inline ))"  # Port for agent to connect to blobstore server used by 'simple' blobstore plugin
-#  provider: "(( inline ))"  # Provider of the blobstore used by director and agent (simple|local)
-#  s3_force_path_style: false  # Whether s3 blobstore plugin will always use path style for bucket access
-#  s3_multipart_threshold: "(( inline ))"  # Simple blobstore threshold for multipart uploads
+#  host: "(( inline ))"  # Host of blobstore server used by s3 blobstore plugin
+#  path: "(( inline ))"  # local blobstore path
+#  port: "(( inline ))"  # Port for agent to connect to blobstore server used by 'dav' blobstore plugin
+#  provider: "(( inline ))"  # Provider of the blobstore used by director and agent (dav|local|s3)
 #  s3_port: 443  # Port of blobstore server used by s3 blobstore plugin
 #  s3_region: "(( inline ))"  # AWS region used by s3 blobstore plugin
 #  s3_signature_version: "(( inline ))"  # Signature version used to connect to an s3 blobstore
-#  secret_access_key: "(( inline ))"  # secret_access_key used by s3 blobstore plugin
-#  ssl_verify_peer: true  # Verify the SSL certificate used on the blobstore?
-#  use_ssl: true  # Whether the simple blobstore plugin should use SSL to connect to the blobstore server
+#  secret_access_key: "(( inline ))"  # AWS secret_access_key used by s3 blobstore plugin
+#  ssl_verify_peer: true  # Whether the s3 blobstore plugin should verify its peer when using SSL
+#  use_ssl: true  # Whether the s3 blobstore plugin should use SSL to connect to the blobstore server
 #env:
 #  http_proxy: "(( inline ))"  # Http proxy to connect to cloud API's
 #  https_proxy: "(( inline ))"  # Https proxy to connect to cloud API's
@@ -50,7 +46,9 @@
 #  connection_options: "(( inline ))"  # Hash containing additional connection parameters (optional)
 #  default_key_name: "(( inline ))"  # Default OpenStack keypair to use when spinning up new VMs (required)
 #  default_security_groups: "(( inline ))"  # Default OpenStack security groups to use when spinning up new VMs (required)
+#  default_volume_type: "(( inline ))"  # Default OpenStack volume type to use when creating new disks (optional)
 #  domain: "(( inline ))"  # OpenStack domain (required for Keystone API V3)
+#  enable_auto_anti_affinity: false  # Configures soft anti-affinity. For each instance group an OpenStack server group with a soft-anti-affinity policy is created. If anti-affinity can not be achieved (more than one VM is placed on a single hypervisor) the deployment will not fail and no warning will be shown.
 #  endpoint_type: publicURL  # OpenStack endpoint type
 #  human_readable_vm_names: false  # When creating a VM, use the job name as VM name if true. Otherwise use a generated UUID as name. If this parameter is set to true, the registry.endpoint parameter has to be set.
 #  ignore_server_availability_zone: false  # When creating a disk, do not use the availability zone of the server, fall back to Openstacks default
@@ -60,6 +58,7 @@
 #  stemcell_public_visibility: false  # Set public visibility for stemcells
 #  tenant: "(( inline ))"  # OpenStack tenant name (required for Keystone API V2)
 #  use_dhcp: true  # Whether to use DHCP when configuring networking on VM (for both manual and dynamic)
+#  use_nova_networking: false  # Nova networking APIs are deprecated with the Newton release, hence this switch will likely not work in future releases.'
 #  username: "(( inline ))"  # OpenStack user name (required)
 #  wait_resource_poll_interval: 5  # Changes the delay (in seconds) between each status check to OpenStack when creating a resource (optional, by default 5)
 #registry:
