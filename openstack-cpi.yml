@@ -1,0 +1,70 @@
+#---
+#agent:
+#  blobstore:
+#    access_key_id: "(( inline ))"  # access_key_id for agent used by s3 blobstore plugin
+#    address: "(( inline ))"  # Address for agent to connect to blobstore server used by simple blobstore plugin
+#    host: "(( inline ))"  # Host of agent blobstore server used by simple blobstore plugin
+#    s3_force_path_style: "(( inline ))"  # Whether the agent blobstore plugin will always use path style for bucket access
+#    s3_multipart_threshold: "(( inline ))"  # Agent blobstore threshold for multipart uploads
+#    s3_port: "(( inline ))"  # Port of agent blobstore server used by s3 blobstore plugin
+#    s3_region: "(( inline ))"  # AWS region for agent used by s3 blobstore plugin
+#    s3_signature_version: "(( inline ))"  # Signature version used to connect to an s3 blobstore
+#    secret_access_key: "(( inline ))"  # secret_access_key for agent used by s3 blobstore plugin
+#    ssl_verify_peer: "(( inline ))"  # Whether the agent blobstore plugin should verify its peer when using SSL
+#    use_ssl: "(( inline ))"  # Whether the agent blobstore plugin should use SSL to connect to the blobstore server
+#  mbus: "(( inline ))"  # Message bus endpoint for the agent to start accepting agent requests
+#blobstore:
+#  access_key_id: "(( inline ))"  # access_key_id used by s3 blobstore plugin
+#  address: "(( inline ))"  # Address for agent to connect to blobstore server used by 'simple' blobstore plugin
+#  agent:
+#    password: "(( inline ))"  # Password agent uses to connect to blobstore used by 'simple' blobstore plugin
+#    user: "(( inline ))"  # Username agent uses to connect to blobstore used by 'simple' blobstore plugin
+#  bucket_name: "(( inline ))"  # S3 Bucket used by s3 blobstore plugin
+#  host: "(( inline ))"  # Host of blobstore server used by simple blobstore plugin
+#  path: "(( inline ))"  # Path used by 'local' blobstore plugin
+#  port: "(( inline ))"  # Port for agent to connect to blobstore server used by 'simple' blobstore plugin
+#  provider: "(( inline ))"  # Provider of the blobstore used by director and agent (simple|local)
+#  s3_force_path_style: false  # Whether s3 blobstore plugin will always use path style for bucket access
+#  s3_multipart_threshold: "(( inline ))"  # Simple blobstore threshold for multipart uploads
+#  s3_port: 443  # Port of blobstore server used by s3 blobstore plugin
+#  s3_region: "(( inline ))"  # AWS region used by s3 blobstore plugin
+#  s3_signature_version: "(( inline ))"  # Signature version used to connect to an s3 blobstore
+#  secret_access_key: "(( inline ))"  # secret_access_key used by s3 blobstore plugin
+#  ssl_verify_peer: true  # Verify the SSL certificate used on the blobstore?
+#  use_ssl: true  # Whether the simple blobstore plugin should use SSL to connect to the blobstore server
+#env:
+#  http_proxy: "(( inline ))"  # Http proxy to connect to cloud API's
+#  https_proxy: "(( inline ))"  # Https proxy to connect to cloud API's
+#  no_proxy: "(( inline ))"  # No proxy environment variable
+#nats:
+#  address: "(( inline ))"  # NATS address used by agent to subscribe to agent requests
+#  password: "(( inline ))"  # NATS password used by agent to subscribe to agent requests
+#  port: 4222  # NATS port used by agent to subscribe to agent requests
+#  user: "(( inline ))"  # NATS username used by agent to subscribe to agent requests
+#ntp: []  # List of NTP servers
+#openstack:
+#  api_key: "(( inline ))"  # OpenStack API key (required)
+#  auth_url: "(( inline ))"  # URL of the OpenStack Identity endpoint to connect to (required)
+#  boot_from_volume: false  # Boot from volume
+#  config_drive: "(( inline ))"  # Config drive device (cdrom or disk) to use as metadata service on OpenStack (optional)
+#  connection_options: "(( inline ))"  # Hash containing additional connection parameters (optional)
+#  default_key_name: "(( inline ))"  # Default OpenStack keypair to use when spinning up new VMs (required)
+#  default_security_groups: "(( inline ))"  # Default OpenStack security groups to use when spinning up new VMs (required)
+#  domain: "(( inline ))"  # OpenStack domain (required for Keystone API V3)
+#  endpoint_type: publicURL  # OpenStack endpoint type
+#  human_readable_vm_names: false  # When creating a VM, use the job name as VM name if true. Otherwise use a generated UUID as name. If this parameter is set to true, the registry.endpoint parameter has to be set.
+#  ignore_server_availability_zone: false  # When creating a disk, do not use the availability zone of the server, fall back to Openstacks default
+#  project: "(( inline ))"  # OpenStack project name (required for Keystone API V3)
+#  region: "(( inline ))"  # OpenStack region (optional)
+#  state_timeout: 300  # Timeout (in seconds) for OpenStack resources desired state
+#  stemcell_public_visibility: false  # Set public visibility for stemcells
+#  tenant: "(( inline ))"  # OpenStack tenant name (required for Keystone API V2)
+#  use_dhcp: true  # Whether to use DHCP when configuring networking on VM (for both manual and dynamic)
+#  username: "(( inline ))"  # OpenStack user name (required)
+#  wait_resource_poll_interval: 5  # Changes the delay (in seconds) between each status check to OpenStack when creating a resource (optional, by default 5)
+#registry:
+#  endpoint: "(( inline ))"  # Full URL for the registry endpoint that may include basic auth credentials
+#  host: "(( inline ))"  # Address of the Registry to connect to (required)
+#  password: "(( inline ))"  # Password to access the Registry
+#  port: 25777  # Port of the Registry for CPI and agent to connect to
+#  username: "(( inline ))"  # Username to access the Registry
