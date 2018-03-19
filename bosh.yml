@@ -3,8 +3,10 @@
 #  blobstore:
 #    access_key_id: "(( inline ))"  # AWS access_key_id for agent used by s3 blobstore plugin
 #    address: "(( inline ))"  # Address for agent to connect to blobstore server used by simple blobstore plugin
-#    credentials_source: static  # AWS credentials (static / env_or_profile)
+#    credentials_source: static  # AWS or GCP Credential Source (static / env_or_profile / none)
+#    encryption_key: "(( inline ))"  # Customer-Supplied Encryption key used when storing blobs in GCS (Optional - Base64 encoded 32 byte key)
 #    host: "(( inline ))"  # Host of blobstore server used by simple blobstore plugin
+#    json_key: "(( inline ))"  # Contents of a GCP JSON service account file used for static credentials_source (optional)
 #    port: "(( inline ))"  # Port for agent to connect to blobstore server used by simple blobstore plugin
 #    s3_region: "(( inline ))"  # AWS region for agent used by s3 blobstore plugin
 #    s3_signature_version: "(( inline ))"  # Signature version of the blobstore used by s3 blobstore plugin (optional, if not provided the s3 client decides which version to use)
@@ -12,6 +14,7 @@
 #    server_side_encryption: "(( inline ))"  # Server-side encryption algorithm used when storing blobs in S3 (Optional - "AES256"|"aws:kms")
 #    sse_kms_key_id: "(( inline ))"  # AWS KMS key ID to use for object encryption. All GET and PUT requests for an object protected by AWS KMS will fail if not made via SSL or using SigV4.
 #    ssl_verify_peer: true  # Verify the SSL certificate used on the blobstore?
+#    storage_class: "(( inline ))"  # Storage Class used when storing blobs in GCS (optional, if not provided uses bucket default)
 #    use_ssl: true  # Whether the simple blobstore plugin should use SSL to connect to the blobstore server
 #  nats:
 #    address: "(( inline ))"  # Address for agent to connect to nats
@@ -33,17 +36,20 @@
 #    password: "(( inline ))"  # Password agent uses to connect to blobstore used by simple blobstore plugin
 #    user: "(( inline ))"  # Username agent uses to connect to blobstore used by simple blobstore plugin
 #  backend_port: 25251  # TCP port backend blobstore server (simple blobstore) listens on
-#  bucket_name: "(( inline ))"  # AWS S3 Bucket used by s3 blobstore plugin
-#  credentials_source: static  # AWS Credential Source (static / env_or_profile)
+#  bucket_name: "(( inline ))"  # AWS S3 or GCP GCS Bucket used by external blobstore plugin
+#  credentials_source: static  # AWS or GCP Credential Source (static / env_or_profile / none)
 #  director:
 #    password: "(( inline ))"  # Password director uses to connect to blobstore used by simple blobstore plugin
 #    user: "(( inline ))"  # Username director uses to connect to blobstore used by simple blobstore plugin
+#  encryption_key: "(( inline ))"  # Customer-Supplied Encryption key used when storing blobs in GCS (Optional - Base64 encoded 32 byte key)
 #  host: "(( inline ))"  # Host of blobstore server used by simple blobstore plugin
+#  ipv6_listen: false  # Enable binding to IPv6 addresses
+#  json_key: "(( inline ))"  # Contents of a GCP JSON service account file used for static credentials_source (optional)
 #  max_upload_size: 5000m  # Max allowed file size for upload
 #  nginx:
 #    workers: 2  # Number of nginx workers for blobstore
 #  port: 25250  # Port of blobstore server used by simple blobstore plugin
-#  provider: dav  # Provider of the blobstore used by director and agent (dav|simple|s3)
+#  provider: dav  # Provider of the blobstore used by director and agent (dav|simple|s3|gcs)
 #  s3_port: 443  # Port of blobstore server used by s3 blobstore plugin
 #  s3_region: "(( inline ))"  # Region of the blobstore used by s3 blobstore plugin
 #  s3_signature_version: "(( inline ))"  # Signature version of the blobstore used by s3 blobstore plugin (optional, if not provided the s3 client decides which version to use)
@@ -51,6 +57,7 @@
 #  server_side_encryption: "(( inline ))"  # Server-side encryption algorithm used when storing blobs in S3 (Optional - "AES256"|"aws:kms")
 #  sse_kms_key_id: "(( inline ))"  # AWS KMS key ID to use for object encryption. All GET and PUT requests for an object protected by AWS KMS will fail if not made via SSL or using SigV4.
 #  ssl_verify_peer: true  # Verify the SSL certificate used on the blobstore?
+#  storage_class: "(( inline ))"  # Storage Class used when storing blobs in GCS (optional, if not provided uses bucket default)
 #  use_ssl: true  # Whether the simple blobstore plugin should use SSL to connect to the blobstore server
 #compiled_package_cache:
 #  options:
@@ -101,11 +108,12 @@
 #  disks:
 #    cleanup_schedule: 0 0,30 * * * * UTC  # RufusScheduler cron formatted schedule for cleanup of orphaned disks and orphaned snapshots
 #    max_orphaned_age_in_days: 5  # Days to keep orphaned disks and orhaned snapshots before cleanup
+#  enable_cpi_resize_disk: false  # Enable/Disable native CPI disk resizing (true|false)
 #  enable_dedicated_status_worker: false  # Separate worker for 'bosh vms' and 'bosh ssh'
+#  enable_nats_delivered_templates: false  # When true, rendered templates will be sent over NATs
 #  enable_post_deploy: false  # When true, all templates will run their post_deploy script once deployment is complete
 #  enable_snapshots: false  # Enable/Disable snapshots for persistent disks (true|false)
 #  enable_virtual_delete_vms: false  # When true, bosh will not delete vm from cloud when instance update, just destroy vm record in db
-#  encryption: false  # Enable/Disable agent-director encryption (true|false)
 #  events:
 #    cleanup_schedule: 0 * * * * UTC  # RufusScheduler cron formatted schedule for cleanup of events
 #    max_events: 10000  # Max number of events to keep
@@ -113,17 +121,21 @@
 #  flush_arp: false  # Clear up arp entries when machines are recreated
 #  generate_vm_passwords: false  # When true, a random unique password will be used for each vm if user has not specified a password
 #  ignore_missing_gateway: false  # Allow gateway to be omitted from subnet configuration. Boshlite vms(containers) do not require gateway.
-#  local_dns: {}  # Enables local DNS, i.e., sending sync_dns messages with all names/IPs to all agents managed by this director
+#  ipv6_listen: false  # Enable binding to IPv6 addresses
+#  local_dns:
+#    enabled: false  # Enables local DNS, i.e., sending sync_dns messages with all names/IPs to all agents managed by this director
+#    include_index: false  # If local DNS is enabled, then include_index will cause director to propagate dns records with instance index number as well as dns records with instance ID
+#    use_dns_addresses: false  # When true, address references in rendered templates will evaluate to DNS entries rather than IP addresses
 #  log_access_events_to_syslog: false  # Access to api is logged to the syslog
-#  max_tasks: 100  # Max number of tasks per each type to keep in disk
+#  max_tasks: 2000  # Max number of tasks per each type to keep in disk
 #  max_threads: 32  # Max number of director concurrent threads
 #  max_upload_size: 10000m  # Max allowed file size for upload
 #  max_vm_create_tries: 5  # Max retries when creating VMs
 #  name: "(( inline ))"  # Name of the director
 #  nginx:
-#    ssl_ciphers: ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!3DES:!MD5:!PSK  # https://www.openssl.org/docs/apps/ciphers.html#CIPHER_LIST_FORMAT)'
+#    ssl_ciphers: DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!3DES:!MD5:!PSK  # https://www.openssl.org/docs/manmaster/man1/ciphers.html - CIPHER LIST FORMAT section)'
 #    ssl_prefer_server_ciphers: true  # Prefer server's cipher priority instead of client's (true for On, false for Off)
-#    ssl_protocols: TLSv1 TLSv1.1 TLSv1.2  # SSL/TLS protocols to allow
+#    ssl_protocols: TLSv1.2  # SSL/TLS protocols to allow
 #    workers: 2  # Number of nginx workers for director
 #  port: 25555  # Port of the Bosh Director to connect to
 #  proxy_timeout: 900  # Timeout for proxy connection from nginx to director
@@ -171,12 +183,6 @@
 #  http_proxy: "(( inline ))"  # HTTP proxy that the registry should use
 #  https_proxy: "(( inline ))"  # HTTPS proxy that the registry should use
 #  no_proxy: "(( inline ))"  # List of comma-separated hosts that should skip connecting to the proxy in the registry
-#event_nats:
-#  address: "(( inline ))"  # Address of the event NATS message bus to connect to
-#  password: "(( inline ))"  # Password for event NATS message bus connection
-#  port: "(( inline ))"  # Port of the event NATS message bus port to connect to
-#  user: "(( inline ))"  # User for the event NATS message bus connection
-#event_nats_enabled: false  # Enable event NATS message bus plugin
 #hm:
 #  cloud_watch_enabled: false  # Enable AWS CloudWatch Plugin
 #  consul_event_forwarder:
@@ -222,6 +228,10 @@
 #    prune_events: 30  # Interval (in seconds) to prune received events
 #    rogue_agent_alert: 120  # Interval (in seconds) to consider an agent as rogue (an agent that is no part of any deployment)
 #  loglevel: info  # Level of log messages (fatal, error, warn, info, debug)
+#  nats:
+#    certs:
+#      certificate: "(( inline ))"  # |
+#      private_key: "(( inline ))"  # Private Key for establishing mutual TLS with NATs
 #  pagerduty:
 #    http_proxy: "(( inline ))"  # HTTP proxy to connect to PagerDuty (optional)
 #    service_key: "(( inline ))"  # PagerDuty service API key
@@ -244,30 +254,35 @@
 #    port: "(( inline ))"  # Port of the SMTP server to connect to (e.g. 25, 465, or 587)
 #    tls: "(( inline ))"  # Use STARTTLS (optional)
 #    user: "(( inline ))"  # User for SMTP Authentication (optional, use in conjuction with hm.smtp.auth)
-#  syslog_event_forwarder:
-#    address: "(( inline ))"  # IP address of the syslog drain
-#    custom_rule: ''  # Custom rule for syslog event forwarder
-#    port: 5514  # Port of the syslog drain
-#    transport: tcp  # One of ["udp", "tcp", "relp"]
-#  syslog_event_forwarder_enabled: false  # Enable syslog forwarder plugin
+#  syslog_event_forwarder_enabled: "(( inline ))"  # Removed. Please co-locate the syslog-release instead to forward your logs.
 #  tsdb:
 #    address: "(( inline ))"  # Address of TSDB to connect to
 #    port: "(( inline ))"  # Port of TSDB to connect to
 #  tsdb_enabled: false  # Enable TSDB plugin
 #nats:
 #  address: "(( inline ))"  # Address of the NATS message bus to connect to
-#  auth_timeout: 1  # Timeout (in seconds) for clients to send auth credentials
-#  http:
-#    password: "(( inline ))"  # Password clients must use to access nats mbus via HTTP connection (optional)
-#    port: 9222  # TCP port NATS listens on for HTTP connections (optional)
-#    user: "(( inline ))"  # Username clients must use to access nats mbus via HTTP connection (optional)
+#  allow_legacy_agents: true  # Flag for allowing legacy agents
+#  auth_timeout: 30  # Timeout (in seconds) for clients to send auth credentials
 #  listen_address: 0.0.0.0  # IP address nats mbus listens on
-#  no_epoll: false  # Disable epoll (Linux)
-#  no_kqueue: true  # Disable kqueue (MacOSX and BSD)
 #  password: "(( inline ))"  # Password clients must use to access nats mbus
 #  ping_interval: 5  # Time interval (in seconds) pings from server
 #  ping_max_outstanding: 2  # Maximum number of pings before declaring a client unresponsive
 #  port: 4222  # TCP port nats mbus listens on
+#  tls:
+#    ca: "(( inline ))"  # CA cert used by NATS server to verify clients certificates (For Mutual TLS Connections)
+#    client_ca:
+#      certificate: "(( inline ))"  # Certificate for NATs mutual TLS (Director uses to generate Agent cert)
+#      private_key: "(( inline ))"  # Private Key for NATs mutual TLS (Director uses to generate Agent cert)
+#    director:
+#      certificate: "(( inline ))"  # |
+#      private_key: "(( inline ))"  # Private Key for NATs mutual TLS client (Director client)
+#    health_monitor:
+#      certificate: "(( inline ))"  # Certificate for NATs mutual TLS
+#      private_key: "(( inline ))"  # Private Key for NATs mutual TLS
+#    server:
+#      certificate: "(( inline ))"  # |
+#      private_key: "(( inline ))"  # Private Key used by the NATS server to serve TLS connections
+#    timeout: 30  # Timeout (in seconds) for TLS handshake
 #  user: "(( inline ))"  # Username clients must use to access nats mbus
 #ntp:
 #- 0.pool.ntp.org
@@ -302,7 +317,6 @@
 #    password: "(( inline ))"  # Password used for the registry database
 #    port: 5432  # Port of the registry database
 #    user: bosh  # Username used for the registry database
-#  http:
-#    password: "(( inline ))"  # Password clients must use to access Registry via HTTP Basic Auth
-#    port: 25777  # TCP port Registry daemon listens on
-#    user: "(( inline ))"  # Username clients must use to access Registry via HTTP Basic Auth
+#  password: "(( inline ))"  # Password clients must use to access Registry via HTTP Basic Auth
+#  port: 25777  # TCP port Registry daemon listens on
+#  username: "(( inline ))"  # Username clients must use to access Registry via HTTP Basic Auth
